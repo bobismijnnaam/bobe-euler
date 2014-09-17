@@ -1,0 +1,1 @@
+: supprim.cpp |> g++ -std=c++11 supprim.cpp -o supprim.exe |> supprim.exe
