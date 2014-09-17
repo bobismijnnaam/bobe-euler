@@ -171,3 +171,31 @@ def removeDupsOrdered(array):
 			result.append(e)
 	
 	return result
+
+def simplifyFraction(nj, numerator, denominator):
+	if denominator == 0:
+		return (0, 0)
+	if numerator == 0:
+		return (0, 0)
+
+	numFactors = nj.getFactors(numerator)
+	denFactors = nj.getFactors(denominator)
+
+	i = 0
+	while i < len(denFactors):
+		currFactor = denFactors[i]
+		if currFactor in denFactors and currFactor in numFactors:
+			denFactors.remove(currFactor)
+			numFactors.remove(currFactor)
+		else:
+			i += 1
+	
+	newNumerator = 1
+	for f in numFactors:
+		newNumerator *= f
+	
+	newDenominator = 1
+	for f in denFactors:
+		newDenominator *= f
+
+	return (newNumerator, newDenominator)
