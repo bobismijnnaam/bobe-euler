@@ -2,6 +2,13 @@
 
 import collections
 
+# skim seems to be intensive and doing a lot of work even though in some
+# cases it could do less. For example, in add, you can stop skimming if after 
+# skimming the first two cells the carrier is 0.
+# we need more kinds of skimming, at least two (i.e. the skim as we know it
+# now for extreme cases, and a skim that I just described to cover cases
+# where we now after topping off one time we now there are no others.)
+
 class BigInt:
     def __init__(self):
         self.number = [0]
@@ -9,7 +16,7 @@ class BigInt:
     def skim(self):
         carrier = 0
 
-        for i in range(0, len(self.number)):
+        for i in range(len(self.number)):
             self.number[i] += carrier
             head = self.number[i] % 10
             carrier = (self.number[i] - head) / 10
@@ -27,7 +34,7 @@ class BigInt:
         self.skim();
 
     def mul(self, factor):
-        for i in range(0, len(self.number)):
+        for i in range(len(self.number)):
             self.number[i] *= factor
 
         self.skim()
@@ -48,6 +55,65 @@ class BigInt:
         for _ in range(factor - 1):
             self.bigMul(oldSelf)
 
+    def smartPow(self, factor):
+        # Inspired by: https://en.wikipedia.org/wiki/Exponentiation_by_squaring 
+        if factor < 0:
+            raise NotImplementedError("Negative powers not supported")
+
+        if type(factor) == type(0.1) and not factor.is_integer():
+            raise NotImplementedError("Non-integer powers not supported")
+
+        if factor == 0:
+            self.numbers = [1]
+            return
+
+        if factor == 1:
+            return
+
+        if (factor % 2) == 0:
+            # Even
+            self.bigMul(self)
+            self.smartPow(factor / 2)
+        else:
+            # Odd
+            oldSelf = self.clone()
+
+            self.bigMul(self)
+            self.smartPow((factor - 1) / 2)
+
+            self.bigMul(oldSelf)
+
+    def smartPowIt(self, factor):
+        # Inspired by: https://en.wikipedia.org/wiki/Exponentiation_by_squaring 
+        if factor < 0:
+            raise NotImplementedError("Negative powers not supported")
+
+        if type(factor) == type(0.1) and not factor.is_integer():
+            raise NotImplementedError("Non-integer powers not supported")
+
+        if factor == 0:
+            self.numbers = [1]
+            return
+
+        if factor == 1:
+            return
+
+        y = BigInt()
+        y.add(1)
+
+        while factor > 1:
+            if (factor % 2) == 0:
+                # Even
+                self.bigMul(self)
+                factor /= 2
+            else:
+                # Odd
+                y.bigMul(self)
+                self.bigMul(self)
+                factor = (factor - 1) / 2
+
+        self.bigMul(y)
+
     def bigAdd(self, bigInt):
         if len(self.number) < len(bigInt.number):
             self.number += [0] * (len(bigInt.number) - len(self.number))
@@ -58,15 +124,14 @@ class BigInt:
         self.skim()
 
     def bigMul(self, bigFactor):
-        # Get all the multiplication factors
-        facts = bigFactor.getNumberArray()
+        # We can take the internal list because we construct a new list
+        # (in total)
+        # So even if we multiply with self this should still work out
 
         total = BigInt()
 
         # For each factor...
-        for (i, v) in enumerate(facts):
-            digitSelf = self.clone()
-
+        for (i, v) in enumerate(bigFactor.number):
             # If v is zero, skip it, because then the order should be skipped
             if v == 0:
                 continue
@@ -358,11 +423,29 @@ if __name__ == "__main__":
     bi = BigInt()
     bi.add(3)
     bi.pow(3)
-    print(bi.number)
-    print(bi.toString())
     assert(bi.toString() == "27")
 
     bi = BigInt()
     bi.add(80)
     bi.pow(80)
+    assert(bi.toString() == str(80 ** 80))
+
+    bi = BigInt()
+    bi.add(3)
+    bi.smartPow(3)
+    assert(bi.toString() == "27")
+    
+    bi = BigInt()
+    bi.add(80)
+    bi.smartPow(80)
+    assert(bi.toString() == str(80 ** 80))
+
+    bi = BigInt()
+    bi.add(3)
+    bi.smartPowIt(3)
+    assert(bi.toString() == "27")
+    
+    bi = BigInt()
+    bi.add(80)
+    bi.smartPowIt(80)
     assert(bi.toString() == str(80 ** 80))
