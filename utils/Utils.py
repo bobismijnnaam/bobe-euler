@@ -67,13 +67,6 @@ def generatePrimeTable(lim):
 
 class NumberJuggler:
 	def __init__(self, lim):
-		#with open("primes.txt") as f:
-		#	content = f.readlines()
-		#	primes = []
-		#	for line in content:
-		#		primes.append(int(line))
-		#
-		#	self.primes = primes
 		print("Generating prime lookup table")
 		self.primeTable = generatePrimeTable(lim)
 		print("Generating prime list")
@@ -199,3 +192,37 @@ def simplifyFraction(nj, numerator, denominator):
 		newDenominator *= f
 
 	return (newNumerator, newDenominator)
+
+def isPandigital(num):
+    numStr = str(num)
+    seen = [False] * len(numStr)
+    total = 0
+    for c in numStr:
+        cInt = int(c)
+        if cInt < 1 or cInt > len(numStr):
+            total = -1
+            break
+        if not seen[cInt - 1]:
+            total += 1
+            seen[cInt - 1] = True
+        else:
+            total = -1 
+            break
+
+    return total == len(numStr)
+
+def generatePermutations(elements):
+    allPerms = []
+    
+    if len(elements) == 1:
+        return [elements]
+
+    for i in range(0, len(elements)):
+        lessElements = list(elements)
+        del lessElements[i]
+        partialPerms = generatePermutations(lessElements)
+        for perm in partialPerms:
+            allPerms.append([elements[i]] + perm)
+
+    return allPerms
+
