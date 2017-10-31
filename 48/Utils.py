@@ -32,6 +32,22 @@ class BigInt:
 
         self.skim()
 
+    def pow(self, factor):
+        if factor < 0:
+            raise NotImplementedError("Negative powers not supported")
+
+        if type(factor) == type(0.1) and not factor.is_integer():
+            raise NotImplementedError("Non-integer powers not supported")
+
+        if factor == 0:
+            self.numbers = [1]
+            return
+
+        oldSelf = self.clone()
+
+        for _ in range(factor - 1):
+            self.bigMul(oldSelf)
+
     def bigAdd(self, bigInt):
         if len(self.number) < len(bigInt.number):
             self.number += [0] * (len(bigInt.number) - len(self.number))
@@ -98,6 +114,15 @@ class BigInt:
         for i in range(len(self.number) - 1, n - 1, -1):
             self.number[i] = self.number[i - n]
             self.number[i - n] = 0
+
+    def take(self, n):
+        if n == 0:
+            self.number = [0]
+
+        if n < 0:
+            raise ValueError("Non-negative takes are not supported")
+
+        self.number = self.number[:n]
 
 def generatePrimeTable(lim):
     numbers = [True] * lim
@@ -318,3 +343,26 @@ if __name__ == "__main__":
 
     bb.bigMul(ba)
     assert(bb.toString() == str(12345 * 67890))
+
+    ba = BigInt()
+    ba.add(3)
+
+    bb = BigInt()
+    bb.add(3)
+
+    ba.bigMul(bb)
+    ba.bigMul(bb)
+
+    assert(ba.toString() == "27")
+
+    bi = BigInt()
+    bi.add(3)
+    bi.pow(3)
+    print(bi.number)
+    print(bi.toString())
+    assert(bi.toString() == "27")
+
+    bi = BigInt()
+    bi.add(80)
+    bi.pow(80)
+    assert(bi.toString() == str(80 ** 80))
