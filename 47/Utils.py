@@ -33,7 +33,7 @@ class BigInt:
 	def getNumberArray(self):
 		return list(self.number)
 	
-	def	toString(self):
+	def toString(self):
 		result = ""
 
 		for i in self.number:
