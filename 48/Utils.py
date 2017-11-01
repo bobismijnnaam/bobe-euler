@@ -26,7 +26,6 @@ class BigInt:
             head = carrier % 10
             carrier = (carrier - head) / 10
             self.number.append(int(head)) 
-
     
     def add(self, factor):
         self.number[0] += factor
@@ -34,10 +33,21 @@ class BigInt:
         self.skim();
 
     def mul(self, factor):
+        carry = 0
+
         for i in range(len(self.number)):
             self.number[i] *= factor
+            self.number[i] += carry
+            carry = 0
+            if self.number[i] > 9:
+                head = int(self.number[i] % 10)
+                carry = int((self.number[i] - head) / 10)
+                self.number[i] = head
 
-        self.skim()
+        while carry != 0:
+            head = carry % 10
+            carry = (carry - head) / 10
+            self.number.append(int(head)) 
 
     def pow(self, factor):
         if factor < 0:
@@ -113,15 +123,29 @@ class BigInt:
                 factor = (factor - 1) / 2
 
         self.bigMul(y)
+    
+    def skimOne(self, i):
+        if self.number[i] > 9:
+            old = self.number[i]
+            self.number[i] = int(old % 10)
+            head = int((old - (old % 10)) / 10)
+            if i + 1 < len(self.number):
+                self.number[i + 1] += head
+            else:
+                self.number.append(head)
 
     def bigAdd(self, bigInt):
+        # TODO: Self add does not work!
+
         if len(self.number) < len(bigInt.number):
             self.number += [0] * (len(bigInt.number) - len(self.number))
 
         for (i, v) in enumerate(bigInt.number):
             self.number[i] += bigInt.number[i]
+            self.skimOne(i)
 
-        self.skim()
+        # TODO: Bottleneck for smartpow is here!
+        # self.skim()
 
     def bigMul(self, bigFactor):
         # We can take the internal list because we construct a new list
@@ -389,6 +413,7 @@ if __name__ == "__main__":
     bi = BigInt()
     bi.add(50)
     bi.mul(5)
+    # print(bi.toString())
     assert(bi.toString() == "250")
 
     ba = BigInt()

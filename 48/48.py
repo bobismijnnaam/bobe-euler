@@ -19,11 +19,17 @@ if __name__ == "__main__":
 
     for i in range(1, 1000 + 1):
         print("Doing", i)
-        bi = BigInt()
-        bi.add(i)
-        print("\tPowing...")
-        bi.smartPow(i)
-        print("\tAdding...")
-        total.bigAdd(bi)
+        aggregator = BigInt()
+        aggregator.add(i)
 
-    print(total.toString()[-10:])
+        print("Powing...")
+        for j in range(i - 1):
+            aggregator.mul(i)
+            aggregator.take(10)
+
+        print("Adding...")
+        total.bigAdd(aggregator)
+        total.take(10)
+
+    assert("9110846700" == total.toString()[-10:])
+    print("Okay:", total.toString()[-10:])
