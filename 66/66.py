@@ -33,12 +33,44 @@ def solveCeiled(D, floor, ceiling):
 
         x += 1
 
+# https://brilliant.org/wiki/quadratic-diophantine-equations-pells-equation/ 
+def solveForD(D):
+    m = continuedFractionsOfSquareRootOf(D)
+    if (len(m) - 1) % 2 == 0:
+        # Even case
+        # Use everything except the last one
+        return collapseFractionExpansion(m[:-1])
+    else:
+        # Uneven case
+        # Use everything and additionally the inner part one more time
+        return collapseFractionExpansion(m + m[:-1][1:])
+
 if __name__ == "__main__":
+    print(continuedFractionsOfSquareRootOf(5))
+    print(continuedFractionsOfSquareRootOf(21))
+    print(collapseFractionExpansion(continuedFractionsOfSquareRootOf(21)[:-1]))
+    print("21:", solveForD(21))
+    print("13:", solveForD(13))
     print(solve(2))
     print(solve(3))
     print(solve(5))
     print(solve(6))
     print(solve(7))
+
+    maxX = -1
+    maxD = None
+    
+    for D in range(2, 1000 + 1):
+        if sqrt(D).is_integer(): continue
+
+        (x, y) = solveForD(D)
+        
+        if x > maxX:
+            maxD = D
+            maxX = x
+
+    print("Max x:", maxX)
+    print("Max D:", maxD)
 
     # maxX = -1
     # D = None
@@ -60,7 +92,7 @@ if __name__ == "__main__":
 
     ###############################
 
-    Ds = [x for x in list(range(2, 1000 + 1)) if not sqrt(x).is_integer()]
+    # Ds = [x for x in list(range(2, 1000 + 1)) if not sqrt(x).is_integer()]
 
     ##############################
 
@@ -82,19 +114,19 @@ if __name__ == "__main__":
 
     ############################
     
-    def xSolvesD(x, D):
-        y = calcY(D, x)
-        return y.is_integer()
+    # def xSolvesD(x, D):
+        # y = calcY(D, x)
+        # return y.is_integer()
 
-    x = 2
+    # x = 2
 
-    while len(Ds) > 1:
-        Ds = [D for D in Ds if not xSolvesD(x, D)]
+    # while len(Ds) > 1:
+        # Ds = [D for D in Ds if not xSolvesD(x, D)]
 
-        if x % 10000 == 0 and x != 0:
-            print("Len(Ds):", len(Ds), "x:", x)
+        # if x % 10000 == 0 and x != 0:
+            # print("Len(Ds):", len(Ds), "x:", x)
 
-        x += 1
+        # x += 1
 
-    print("Solution:", Ds)
+    # print("Solution:", Ds)
 

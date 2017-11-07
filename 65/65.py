@@ -27,7 +27,6 @@ if __name__ == "__main__":
         numerator += m * denominator
         
         if len(ms) > 0: numerator, denominator = denominator, numerator
-
     
     print(numerator, "/", denominator)
 
