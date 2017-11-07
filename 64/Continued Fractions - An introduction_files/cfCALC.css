@@ -1,0 +1,22 @@
+
+.bgSTY  {background-color:#FF6}
+.resSTY {background-color:#FF9}
+.butSTY  {background-color:#FF6}
+.egSTY   {background-color:#CCC}
+.inoutSTY {font-size:smaller;}
+.quadSTY {background-color:palegreen}
+.const   {color:blue}
+.fn      {color:#C03}
+
+.brownbg {background-color:#00F;color:#FF0}
+.redbg  {background-color:red;color:white}
+.reddbl {border:2px double red;color:red}
+.greendbl {border:2px double green;color:green}
+
+.outlinered {color:red;font-weight:bolder;border:2px solid red}
+
+.bpower {color:yellow; background-color:#666; padding:0px 2px 0px 2px;}
+TABLE.tablemaths tr th {color:black}
+TABLE.tablemaths tr td {color:mediumblue}
+
+TABLE.jigsaw {font-size:12px;font-family:Verdana,Trebucket,Courier,sans-serif;color:black;border-collapse:collapse}
