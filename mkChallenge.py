@@ -2,8 +2,9 @@
 
 from shutil import copyfile
 import os
+import sys
 
-challengeNum = int(input("Challenge #:"))
+challengeNum = int(input("Challenge #: "))
 
 print("Creating challenge #", challengeNum)
 
@@ -17,7 +18,9 @@ targetUtilsFile = os.path.join(challengeDir, "Utils.py")
 
 if os.path.isdir(challengeDir):
     print("Aborted because", challengeNum, "already exists")
-    exit()
+    if input("Open gvim instance (y/n): ").startswith("y"):
+        os.system("gvim -c 'cd " + challengeDir + "' " + targetCodeFile)
+    os.exit()
 
 print("Creating challenge directory", challengeDir)
 os.mkdir(challengeDir)
@@ -27,4 +30,13 @@ copyfile(templateFile, targetCodeFile)
 print("Copying", utilsFile, "to", targetUtilsFile)
 copyfile(utilsFile, targetUtilsFile)
 
+if sys.platform == "linux" or platform == "linux2":
+    print("On linux, chmodding script")
+    os.system("chmod +x " + targetCodeFile)
+
 print("Done!")
+
+if input("Open gvim instance (y/n): ").startswith("y"):
+    os.system("gvim -c 'cd " + challengeDir + "' " + targetCodeFile)
+
+
