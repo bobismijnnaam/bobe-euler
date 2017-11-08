@@ -41,12 +41,16 @@ if __name__ == "__main__":
     size = 3
 
     prime = 0
-    nonPrime = 0
+    nonPrime = 1
 
     i = 0
-    # while True:
-    for i in range(6):
+    while True:
+    # for i in range(3):
         i += 1
+        print("----")
+        print("\tSize:", size)
+        print("\te:", e)
+
         # print("Iter", i)
         corners = [corner(e, size, n) for n in range(3)]
         # if corners[0] > limit:
@@ -65,9 +69,6 @@ if __name__ == "__main__":
 
         # print("\tPrimes:", prime)
         # print("\tNon primes:", nonPrime)
-        print("----")
-        print("\tSize:", size)
-        print("\te:", e)
         print("\t", prime, " / ", nonPrime + prime, "=", prime / (prime + nonPrime))
 
         if (prime / (prime + nonPrime)) < 0.10:
@@ -80,3 +81,5 @@ if __name__ == "__main__":
 
         e = nextEntry(e, size)
         size = nextSize(size)
+
+        # 26241 is the correct answer!
