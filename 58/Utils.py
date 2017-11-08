@@ -485,6 +485,18 @@ def collapseFractionExpansion(ms):
         if len(ms) > 0: numerator, denominator = denominator, numerator
     
     return (numerator, denominator)
+    
+def isPrime(num):
+    if num  <= 1:
+        return False
+    elif num == 2:
+        return True
+    else:
+        for n in range(2, int(math.ceil(math.sqrt(num)) + 1)):
+            if num % n == 0:
+                return False
+        
+        return True
 
 if __name__ == "__main__":
     print("Unit testing!")
