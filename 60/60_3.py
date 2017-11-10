@@ -7,11 +7,21 @@ def isOkay(ps, p1, p2):
     newP2 = int(str(p2) + str(p1))
     return (newP1 in ps or isPrime(newP1)) and (newP2 in ps or isPrime(newP2))
 
+okayMemo = {}
 def arePrimesOkay(ps, primes):
     for i, v in enumerate(primes):
         for v2 in primes[i+1:]:
-            if not isOkay(ps, v, v2):
-                return False
+            if (v, v2) in okayMemo:
+                if not okayMemo[(v, v2)]:
+                    return False
+            elif (v2, v) in okayMemo:
+                if not okayMemo[(v2, v)]:
+                    return False
+            else:
+                if not isOkay(ps, v, v2):
+                    okayMemo[(v, v2)] = False
+                    okayMemo[(v2, v)] = False
+                    return False
 
     return True
 
@@ -50,8 +60,8 @@ def shedLayersAndAdvance(primeSupplies, primes):
 
 if __name__ == "__main__":
     # Your code here!
-    limit = 1000
-    digits = 4
+    limit = 10000
+    digits = 5
 
     nj = NumberJuggler(limit)
     pl = nj.primeList
@@ -67,15 +77,25 @@ if __name__ == "__main__":
     primeSupplies[0].pop()
 
     while len(primes) > 0:
-        # print("---")
-        # print([len(x) for x in primeSupplies])
-        # print(primes)
+        i += 1
+        if (i % 100 == 0 and i != 0):
+            print("---")
+            print([len(x) for x in primeSupplies])
+            print(primes)
+            print("foundMinimum:", foundMinimum)
+            print("foundGroup:", foundGroup)
 
         if len(primes) == digits:
             total = sum(primes)
             if total < foundMinimum and arePrimesOkay(ps, primes):
                 foundMinimum = total
                 foundGroup = list(primes)
+
+                print("--!!!!--")
+                print([len(x) for x in primeSupplies])
+                print(primes)
+                print("foundMinimum:", foundMinimum)
+                print("foundGroup:", foundGroup)
         
             # Next prime iteration
             if canAdvance(primeSupplies, primes):
@@ -88,28 +108,17 @@ if __name__ == "__main__":
             if canAddLevel(primeSupplies, primes):
                 addLevel(primeSupplies, primes)
             
-                # Check if the sum is still little enough
-                if sum(primes) >= foundMinimum:
-                    # TODO: These two if branches should be combined somehow
-                    shedLayersAndAdvance(primeSupplies, primes)
-                else:
-                    # Keep cycling until we find primes that fit
-                    while not arePrimesOkay(ps, primes) and canAdvance(primeSupplies, primes):
-                        advanceOnePrime(primeSupplies, primes)
-
-                    # If after the while loop the primes are not okay, pop this level
-                    if not arePrimesOkay(ps, primes):
-                        while not canAdvance(primeSupplies, primes) and len(primes) > 0:
-                            popLevel(primeSupplies, primes)
-
-                        if canAdvance(primeSupplies, primes):
-                            advanceOnePrime(primeSupplies, primes)
             else:
                 shedLayersAndAdvance(primeSupplies, primes)
 
-                    
-        
-            
+            # Keep cycling until we find primes that fit
+            while not arePrimesOkay(ps, primes) and len(primes) > 1:
+                while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
+                    advanceOnePrime(primeSupplies, primes)
+
+                # If after the while loop the primes are not okay, pop this level
+                if not arePrimesOkay(ps, primes) or sum(primes) >= foundMinimum:
+                    shedLayersAndAdvance(primeSupplies, primes)
 
     print("New foundMinimum:", foundMinimum)
     print("Group:", foundGroup)
