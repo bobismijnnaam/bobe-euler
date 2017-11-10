@@ -29,7 +29,7 @@ def addLevel(primeSupplies, primes):
     assert(len(primeSupplies) == len(primes))
 
     newSupply = list(primeSupplies[-1])
-    primes += [newSupply.pop(0)]
+    primes += [newSupply.pop()]
     primeSupplies += [newSupply]
 
 def popLevel(primeSupplies, primes):
@@ -49,7 +49,7 @@ def canAddLevel(primeSupplies, primes):
     return len(primeSupplies[-1]) > 0
 
 def advanceOnePrime(primeSupplies, primes):
-    primes[-1] = primeSupplies[-1].pop(0)
+    primes[-1] = primeSupplies[-1].pop()
 
 def shedLayersAndAdvance(primeSupplies, primes):
     while not canAdvance(primeSupplies, primes) and len(primes) > 0:
@@ -60,8 +60,8 @@ def shedLayersAndAdvance(primeSupplies, primes):
 
 if __name__ == "__main__":
     # Your code here!
-    limit = 10000
-    digits = 5
+    limit = 1000
+    digits = 3
 
     nj = NumberJuggler(limit)
     pl = nj.primeList
@@ -72,9 +72,9 @@ if __name__ == "__main__":
 
     i = 0
 
-    primeSupplies = [list(pl)]
-    primes = [primeSupplies[0][0]]
-    primeSupplies[0].pop()
+    primeSupplies = [list(pl)[::-1]]
+    primes = [primeSupplies[0].pop()]
+    
 
     while len(primes) > 0:
         i += 1
@@ -85,7 +85,7 @@ if __name__ == "__main__":
             print("foundMinimum:", foundMinimum)
             print("foundGroup:", foundGroup)
 
-        if len(primes) == digits:
+        if len(primes) == digits and sum(primes) < foundMinimum:
             total = sum(primes)
             if total < foundMinimum and arePrimesOkay(ps, primes):
                 foundMinimum = total
@@ -109,7 +109,9 @@ if __name__ == "__main__":
                 addLevel(primeSupplies, primes)
             
             else:
-                shedLayersAndAdvance(primeSupplies, primes)
+                # shedLayersAndAdvance(primeSupplies, primes)
+                while not canAddLevel(primeSupplies, primes):
+                    popLevel(primeSupplies, primes)
 
             # Keep cycling until we find primes that fit
             while not arePrimesOkay(ps, primes) and len(primes) > 1:
@@ -117,8 +119,14 @@ if __name__ == "__main__":
                     advanceOnePrime(primeSupplies, primes)
 
                 # If after the while loop the primes are not okay, pop this level
-                if not arePrimesOkay(ps, primes) or sum(primes) >= foundMinimum:
-                    shedLayersAndAdvance(primeSupplies, primes)
+                while sum(primes) >= foundMinimum:
+                    popLevel(primeSupplies, primes)
+
+                if canAdvance(primeSupplies, primes):
+                    advanceOnePrime(primeSupplies, primes)
+                
+                # or not arePrimesOkay(ps, primes):
+                    # shedLayersAndAdvance(primeSupplies, primes)
 
     print("New foundMinimum:", foundMinimum)
     print("Group:", foundGroup)
