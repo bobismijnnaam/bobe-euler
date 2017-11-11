@@ -9,18 +9,20 @@ def isOkay(ps, p1, p2):
 
 okayMemo = {}
 def arePrimesOkay(ps, primes):
+    if len(primes) == 1: return True
+
     for i, v in enumerate(primes):
         for v2 in primes[i+1:]:
-            if (v, v2) in okayMemo:
-                if not okayMemo[(v, v2)]:
-                    return False
-            elif (v2, v) in okayMemo:
-                if not okayMemo[(v2, v)]:
-                    return False
-            else:
+            # if (v, v2) in okayMemo:
+                # if not okayMemo[(v, v2)]:
+                    # return False
+            # elif (v2, v) in okayMemo:
+                # if not okayMemo[(v2, v)]:
+                    # return False
+            # else:
                 if not isOkay(ps, v, v2):
-                    okayMemo[(v, v2)] = False
-                    okayMemo[(v2, v)] = False
+                    # okayMemo[(v, v2)] = False
+                    # okayMemo[(v2, v)] = False
                     return False
 
     return True
@@ -98,35 +100,65 @@ if __name__ == "__main__":
                 print("foundGroup:", foundGroup)
         
             # Next prime iteration
+            while not canAdvance(primeSupplies, primes) and len(primes) > 0:
+                popLevel(primeSupplies, primes)
+
             if canAdvance(primeSupplies, primes):
                 advanceOnePrime(primeSupplies, primes)
-            else:
-                shedLayersAndAdvance(primeSupplies, primes)
 
-        else:
-            # Add a new prime to the front
-            if canAddLevel(primeSupplies, primes):
-                addLevel(primeSupplies, primes)
-            
-            else:
-                # shedLayersAndAdvance(primeSupplies, primes)
-                while not canAddLevel(primeSupplies, primes):
-                    popLevel(primeSupplies, primes)
-
-            # Keep cycling until we find primes that fit
-            while not arePrimesOkay(ps, primes) and len(primes) > 1:
+        if len(primes) < digits:
+            while len(primes) > 1 and not arePrimesOkay(ps, primes):
                 while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
                     advanceOnePrime(primeSupplies, primes)
 
-                # If after the while loop the primes are not okay, pop this level
-                while sum(primes) >= foundMinimum:
+                if sum(primes) >= foundMinimum:
+                    while sum(primes) >= foundMinimum or not canAdvance(primeSupplies, primes):
+                        popLevel(primeSupplies, primes)
+
+                    if canAdvance(primeSupplies, primes):
+                        advanceOnePrime(primeSupplies, primes)
+
+                elif not canAdvance(primeSupplies, primes):
+                    pass
+                elif arePrimesOkay(ps, primes):
+                    pass
+
+
+                # if canAdvance(primeSupplies, primes):
+                    # advanceOnePrime(primeSupplies, primes)
+
+            # Add a new prime to the front
+            if canAddLevel(primeSupplies, primes):
+                addLevel(primeSupplies, primes)
+            else:
+                while not canAdvance(primeSupplies, primes) and len(primes) > 1:
                     popLevel(primeSupplies, primes)
 
-                if canAdvance(primeSupplies, primes):
+                if canAdvance(primeSupplies, primes);
                     advanceOnePrime(primeSupplies, primes)
-                
-                # or not arePrimesOkay(ps, primes):
-                    # shedLayersAndAdvance(primeSupplies, primes)
+
+                while not arePrimesOkay(ps, primes) and len(primes) > 1:
+                    while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
+                        advanceOnePrime(primeSupplies, primes)
+
+                    # If after the while loop the primes are not okay, pop this level
+                    while sum(primes) >= foundMinimum:
+                        popLevel(primeSupplies, primes)
+
+                    if canAdvance(primeSupplies, primes):
+                        advanceOnePrime(primeSupplies, primes)
+
+        # # Keep cycling until we find primes that fit
+        # while not arePrimesOkay(ps, primes) and len(primes) > 1:
+            # while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
+                # advanceOnePrime(primeSupplies, primes)
+
+            # # If after the while loop the primes are not okay, pop this level
+            # while sum(primes) >= foundMinimum:
+                # popLevel(primeSupplies, primes)
+
+            # if canAdvance(primeSupplies, primes):
+                # advanceOnePrime(primeSupplies, primes)
 
     print("New foundMinimum:", foundMinimum)
     print("Group:", foundGroup)
