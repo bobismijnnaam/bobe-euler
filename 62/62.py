@@ -51,7 +51,6 @@ def checkCube(numPerms, cube):
     for permCube in permutations(list(str(cube))):
         i += 1
 
-
         permCube = int("".join(permCube))
 
         if len(str(permCube)) != neededLen: continue
@@ -78,47 +77,13 @@ def checkCube(numPerms, cube):
     return (cubeCount, cubePerms)
 
 if __name__ == "__main__":
-    # Your code here!
-
     limit = 3000
-    numPerms = 3
-    cubes = [int(n**3) for n in range(2, limit)]
+    numPerms = 5
 
-    # for ns in permutations([1, 2, 2, 3]):
-        # print(ns)
-    # exit()
+    cubes = [int(n**3) for n in range(2, limit)]
 
     for cube in cubes:
         (cubeCount, cubePerms) = checkCube(numPerms, cube)
-
-        # cubeCount = 0
-        # cubes = []
-        # seen = set()
-        # print("Checking:", cube, round(cube ** (1.0/3.0)))
-
-        # numCombinations = factorial(len(str(cube)))
-
-        # i = 0
-        # for permCube in permutations(list(str(cube))):
-            # i += 1
-
-            # permCube = int("".join(permCube))
-
-            # if permCube in seen:
-                # continue
-            # else:
-                # seen.add(permCube)
-
-            # print("Considering", permCube)
-
-            # if isCube(permCube):
-                # print("Match:", permCube, round(permCube ** (1.0/3.0)))
-                # cubeCount += 1
-                # cubes += [permCube]
-
-                # if cubeCount > numPerms: break
-
-            # if ((numCombinations - i) + cubeCount) < numPerms: break
 
         if cubeCount == numPerms:
             print("Found:", cubePerms)
@@ -126,11 +91,3 @@ if __name__ == "__main__":
             exit()
 
     print("Not found")
-
-    # for c in cubes:
-        # print(c, round((c ** (1.0/3.0))), isCube(c))
-
-    # a = [1, 2, 3, 4, 5]
-    # for i in range(100):
-        # permute(a)
-        # print(a)
