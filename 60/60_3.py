@@ -27,6 +27,14 @@ def arePrimesOkay(ps, primes):
 
     return True
 
+def checkTailAgainstRest(ps, primes):
+    prime = primes[-1]
+    for otherPrime in primes[:-1]:
+        if not isOkay(ps, prime, otherPrime):
+            return False
+
+    return True
+
 def addLevel(primeSupplies, primes):
     assert(len(primeSupplies) == len(primes))
 
@@ -62,12 +70,14 @@ def shedLayersAndAdvance(primeSupplies, primes):
 
 if __name__ == "__main__":
     # Your code here!
-    limit = 1000
-    digits = 3
+    outerLimit = 10000000
+    limit = 10000
+    digits = 5
 
+    njBig = NumberJuggler(outerLimit)
     nj = NumberJuggler(limit)
     pl = nj.primeList
-    ps = set(pl)
+    ps = set(njBig.primeList)
 
     foundMinimum = digits * limit
     foundGroup = None
@@ -77,19 +87,20 @@ if __name__ == "__main__":
     primeSupplies = [list(pl)[::-1]]
     primes = [primeSupplies[0].pop()]
     
+    state = "dirty"
 
     while len(primes) > 0:
         i += 1
-        if (i % 100 == 0 and i != 0):
+        if (i % 10000 == 0 and i != 0):
             print("---")
             print([len(x) for x in primeSupplies])
             print(primes)
             print("foundMinimum:", foundMinimum)
             print("foundGroup:", foundGroup)
 
-        if len(primes) == digits and sum(primes) < foundMinimum:
+        if len(primes) == digits:
             total = sum(primes)
-            if total < foundMinimum and arePrimesOkay(ps, primes):
+            if total < foundMinimum and checkTailAgainstRest(ps, primes):
                 foundMinimum = total
                 foundGroup = list(primes)
 
@@ -98,67 +109,69 @@ if __name__ == "__main__":
                 print(primes)
                 print("foundMinimum:", foundMinimum)
                 print("foundGroup:", foundGroup)
-        
-            # Next prime iteration
-            while not canAdvance(primeSupplies, primes) and len(primes) > 0:
+
+                print("primeSupplies before:", [len(x) for x in primeSupplies])
+                primeSupplies = [[prime for prime in primeSupply if prime < foundMinimum] for primeSupply in primeSupplies]
+                print("primeSupplies after:", [len(x) for x in primeSupplies])
+
+                state = "dirty"
                 popLevel(primeSupplies, primes)
-
-            if canAdvance(primeSupplies, primes):
-                advanceOnePrime(primeSupplies, primes)
-
-        if len(primes) < digits:
-            while len(primes) > 1 and not arePrimesOkay(ps, primes):
-                while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
-                    advanceOnePrime(primeSupplies, primes)
-
-                if sum(primes) >= foundMinimum:
-                    while sum(primes) >= foundMinimum or not canAdvance(primeSupplies, primes):
-                        popLevel(primeSupplies, primes)
-
-                    if canAdvance(primeSupplies, primes):
-                        advanceOnePrime(primeSupplies, primes)
-
-                elif not canAdvance(primeSupplies, primes):
-                    pass
-                elif arePrimesOkay(ps, primes):
-                    pass
-
-
-                # if canAdvance(primeSupplies, primes):
-                    # advanceOnePrime(primeSupplies, primes)
-
-            # Add a new prime to the front
-            if canAddLevel(primeSupplies, primes):
-                addLevel(primeSupplies, primes)
-            else:
-                while not canAdvance(primeSupplies, primes) and len(primes) > 1:
+                while not canAdvance(primeSupplies, primes) and len(primes) > 0:
                     popLevel(primeSupplies, primes)
 
-                if canAdvance(primeSupplies, primes);
+                if canAdvance(primeSupplies, primes):
+                    advanceOnePrime(primeSupplies, primes)
+            elif total >= foundMinimum:
+                state = "dirty"
+
+                popLevel(primeSupplies, primes)
+                while not canAdvance(primeSupplies, primes) and len(primes) > 0:
+                    popLevel(primeSupplies, primes)
+
+                if canAdvance(primeSupplies, primes):
+                    advanceOnePrime(primeSupplies, primes)
+            else:
+                # Next prime iteration
+                while not canAdvance(primeSupplies, primes) and len(primes) > 0:
+                    popLevel(primeSupplies, primes)
+                    state = "dirty"
+
+                if canAdvance(primeSupplies, primes):
                     advanceOnePrime(primeSupplies, primes)
 
-                while not arePrimesOkay(ps, primes) and len(primes) > 1:
-                    while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
+        if len(primes) < digits:
+            if state == "dirty":
+                while len(primes) > 1 and not checkTailAgainstRest(ps, primes):
+                    while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not checkTailAgainstRest(ps, primes):
                         advanceOnePrime(primeSupplies, primes)
 
-                    # If after the while loop the primes are not okay, pop this level
-                    while sum(primes) >= foundMinimum:
+                    if sum(primes) >= foundMinimum:
+                        while (sum(primes) >= foundMinimum or not canAdvance(primeSupplies, primes)) and len(primes) > 1:
+                            popLevel(primeSupplies, primes)
+
+                        if canAdvance(primeSupplies, primes):
+                            advanceOnePrime(primeSupplies, primes)
+
+                    elif not canAdvance(primeSupplies, primes):
+                        while not canAdvance(primeSupplies, primes) and len(primes) > 1:
+                            popLevel(primeSupplies, primes)
+
+                        if canAdvance(primeSupplies, primes):
+                            advanceOnePrime(primeSupplies, primes)
+                
+                state = "clean"
+
+            if state == "clean" and len(primes) < digits:
+                if canAddLevel(primeSupplies, primes):
+                    addLevel(primeSupplies, primes)
+                else:
+                    while not canAddLevel(primeSupplies, primes) and len(primes) > 0:
                         popLevel(primeSupplies, primes)
 
                     if canAdvance(primeSupplies, primes):
                         advanceOnePrime(primeSupplies, primes)
 
-        # # Keep cycling until we find primes that fit
-        # while not arePrimesOkay(ps, primes) and len(primes) > 1:
-            # while canAdvance(primeSupplies, primes) and sum(primes) < foundMinimum and not arePrimesOkay(ps, primes):
-                # advanceOnePrime(primeSupplies, primes)
-
-            # # If after the while loop the primes are not okay, pop this level
-            # while sum(primes) >= foundMinimum:
-                # popLevel(primeSupplies, primes)
-
-            # if canAdvance(primeSupplies, primes):
-                # advanceOnePrime(primeSupplies, primes)
+                state = "dirty"
 
     print("New foundMinimum:", foundMinimum)
     print("Group:", foundGroup)
