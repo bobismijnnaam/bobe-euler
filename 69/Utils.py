@@ -297,6 +297,28 @@ class NumberJuggler:
             
         return divisors
 
+    def relativePrimes(self, n):
+        nFactors = set(self.getPrimeFactors(n))
+
+        ps = []
+        for i in range(1, n):
+            # theSet = None
+            
+            # if i in relCache:
+                # theSet = relCache[i]
+            # else:
+            if True:
+                theSet = set(self.getPrimeFactors(i))
+            # relCache[i] = theSet
+
+            if len(theSet & nFactors) == 0:
+                ps += [i]
+
+        return ps
+
+    def phi(self, n):
+        return len(self.relativePrimes(n))
+
 def mergeSort(array):
     if len(array) <= 1:
         return array[:]
@@ -524,6 +546,13 @@ def permutations(xs):
     while keepLooping:
         keepLooping = permute(indices)
         if keepLooping: yield [xs[i] for i in indices]
+
+def isValidGon(ngon):
+    for i in range(3, len(ngon), 3):
+        if ngon[0] > ngon[i]:
+            return False
+
+    return True
 
 if __name__ == "__main__":
     print("Unit testing!")
